@@ -1,5 +1,6 @@
 // DEPENDENCIES
 // inquirer
+const inquirer = require('inquirer');
 // pg
 
 // DATA
@@ -41,3 +42,12 @@ const input =[
 
     
 ]
+
+function init() {
+    // ask the questions
+    inquirer
+        .prompt(input)
+}
+
+// function call to initialize app
+init();

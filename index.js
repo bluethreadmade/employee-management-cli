@@ -8,7 +8,7 @@ const inquirer = require('inquirer');
 // USER INTERACTIONS
 
 // ARRAY OF QUESTIONS FOR USER INPUT
-const input =[
+const input = [
     {
         type: 'list',
         name: 'action',

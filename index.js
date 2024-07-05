@@ -2,10 +2,13 @@
 // inquirer
 const inquirer = require('inquirer');
 // pg
+// choices array
+const choices = require('./assets/js/choices');
 
 // DATA
 // FUNCTIONS
-// USER INTERACTIONS
+// set variable to use choices array as the choices array
+const choices = choices;
 
 // ARRAY OF QUESTIONS FOR USER INPUT
 const input = [
@@ -13,16 +16,7 @@ const input = [
         type: 'list',
         name: 'action',
         message: 'What would you like to do?',
-        choices: [
-                    'View All Employees',
-                    'Add Employee',
-                    'Update Employee Roles',
-                    'View All Roles',
-                    'Add Roles',
-                    'View All Departments',
-                    'Add Departments',
-                    'Quit'
-                ]
+        choices: choices.map(action => ({name: action.name, value: action})),
     }    
             // What is the employees first name?
             // What is the employees last name?

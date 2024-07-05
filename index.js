@@ -1,14 +1,30 @@
 // DEPENDENCIES
+// dotenv
+require('dotenv').config();
 // inquirer
 const inquirer = require('inquirer');
-// pg
-// choices array
-const choices = require('./assets/js/choices');
+// pg/pool
+const { Pool } = require('pg');
+
+// choices file
+const choicesFile = require('./assets/js/choices');
+// Connect to database
+const pool = new Pool(
+    {
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      host: 'localhost',
+      database:   process.env.DB_NAME,
+    },
+    console.log(`Connected to the management_db database.`)
+  )
+  
+  pool.connect();
 
 // DATA
 // FUNCTIONS
-// set variable to use choices array as the choices array
-const choices = choices;
+// choices array
+const choicesArray = choicesFile;
 
 // ARRAY OF QUESTIONS FOR USER INPUT
 const input = [
@@ -16,11 +32,12 @@ const input = [
         type: 'list',
         name: 'action',
         message: 'What would you like to do?',
-        choices: choices.map(action => ({name: action.name, value: action})),
+        choices: choicesArray.map(action => ({name: action.name, value: action})),
     }    
             // What is the employees first name?
             // What is the employees last name?
-            // What is the employees role? (choice)
+            // What is the employees role? (choice - pulling roles list as choices)
+            // add an employee will be async 
             // Who is the employees manager? (choice, including none)
         
             // Which employee's role would you like to update? (choice)
@@ -41,6 +58,26 @@ function init() {
     // ask the questions
     inquirer
         .prompt(input)
+        .then((answers) => {
+            const selectedAction = answers.action;
+            if (selectedAction.query) {
+                pool.query(selectedAction.query, (err,res) => {
+                    if (err){
+                        console.error(err);
+                    } else {
+                        console.table(res.rows);
+                    }
+                    pool.end();
+                });
+            } else {
+                console.log('no query associtated with this action');
+                pool.end();
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            pool.end();
+        });
 }
 
 // function call to initialize app

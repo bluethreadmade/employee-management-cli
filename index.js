@@ -5,6 +5,8 @@ require('dotenv').config();
 const inquirer = require('inquirer');
 // pg/pool
 const { Pool } = require('pg');
+// console.table for 'prettier' tables (no index col)
+const cTable = require('console.table');
 
 // choices file
 const choicesFile = require('./assets/js/choices');
@@ -55,8 +57,8 @@ const input = [
 ]
 
 function init() {
-    // ask the questions
     inquirer
+        // ask the questions
         .prompt(input)
         .then((answers) => {
             const selectedAction = answers.action;

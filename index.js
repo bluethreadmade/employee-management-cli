@@ -37,21 +37,16 @@ const input = [
         message: 'What would you like to do?',
         choices: displayChoicesArray.map(action => ({name: action.name, value: action})),
     }    
-            // What is the employees first name?
-            // What is the employees last name?
-            // What is the employees role? (choice - pulling roles list as choices)
-            // add an employee will be async 
-            // Who is the employees manager? (choice, including none)
-        
             // Which employee's role would you like to update? (choice)
             // Which role do you want to assign to the selected employee? (choice)
 
 
-        
+            // add role
             // What is the name of the role?
             // What is the salary of the role?
             // Which department does the role belong to? (choice)
         
+            // add dept
             // What is the name of the department?
 
     
@@ -106,7 +101,6 @@ async function init() {
                     // Who is the employees manager? (choice, including none)
                 ])
                 .then((answers) => {
-                    console.log(answers);
 
                         const roleID = answers['new-employee-role'].value;
                         const firstName = answers['first-name'];
@@ -116,8 +110,29 @@ async function init() {
                         const values = [`${firstName}`, `${lastName}`, `${roleID}`]
 
                         const res = pool.query(text, values);
-                        console.log(res.rows);
-                        });
+                        console.log("Employee Added");
+                });
+            } else if (selectedAction.name === "Add Departments") {
+                inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        name: 'department_name',
+                        message: 'What is the name of the new department?'
+                    }
+                ])
+                .then((answers) => {
+                    const newDepartment = answers['department_name'];
+
+                    const text = 'INSERT INTO departments (department_name) VALUES ($1)'
+                    const values = [`${newDepartment}`]
+                    
+                    const res = pool.query(text, values);
+                    console.log("Department Added");
+                }
+
+                );
+            
 
             } else {
                 console.log('no query associtated with this action');

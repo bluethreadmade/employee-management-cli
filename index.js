@@ -10,6 +10,7 @@ require('console.table');
 
 // choices file
 const displayChoicesFile = require('./assets/js/display-choices');
+const { get } = require('http');
 // Connect to database
 const pool = new Pool(
     {
@@ -56,26 +57,19 @@ const input = [
     
 ];
 
-function getRoles() {
-    return new Promise((resolve, reject) => {
-        pool.query('SELECT title AS "name", id AS "value" FROM roles;', (err, res) => {
-            if (err) {
-                console.error(err);
-                reject.err;
-            } else {
-                console.log(res.rows);
-                resolve(res.rows);
-            }
-            pool.end();
-        });
-    });
+async function getRoles() {
+    try {
+        const roles = await pool.query('SELECT title AS "name", id AS "value" FROM roles;');
+        return roles.rows;
+    } catch (error) {
+        console.error("Error getting roles:", error);
+        throw error;            
+    }
 };
 
 async function init() {
     try {
-        // get the roles
-        const rolesArray = await getRoles();
-
+    const rolesArray = await getRoles();
     inquirer
         // ask the questions
         .prompt(input)
@@ -107,7 +101,7 @@ async function init() {
                         type: 'list',
                         name: 'new-employee-role',
                         message: 'What is the employees role?',
-                        choices: rolesArray.map(roles => ({name: roles.name, value: roles}))
+                        choices: rolesArray.map(role => ({name: role.name, value: role}))
                     },
                     // add an employee will be async 
                     // Who is the employees manager? (choice, including none)
@@ -122,7 +116,7 @@ async function init() {
             pool.end();
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error initializing app:", error);
         pool.end();
     }
 };

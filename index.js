@@ -103,9 +103,22 @@ async function init() {
                         message: 'What is the employees role?',
                         choices: rolesArray.map(role => ({name: role.name, value: role}))
                     },
-                    // add an employee will be async 
                     // Who is the employees manager? (choice, including none)
                 ])
+                .then((answers) => {
+                    console.log(answers);
+
+                        const roleID = answers['new-employee-role'].value;
+                        const firstName = answers['first-name'];
+                        const lastName = answers['last-name'];
+                        // if the first name, last name and role were submitted - add the employee
+                        const text = 'INSERT INTO employees (first_name, last_name, role_id) VALUES ($1, $2, $3)'
+                        const values = [`${firstName}`, `${lastName}`, `${roleID}`]
+
+                        const res = pool.query(text, values);
+                        console.log(res.rows);
+                        });
+
             } else {
                 console.log('no query associtated with this action');
                 pool.end();

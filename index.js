@@ -6,10 +6,10 @@ const inquirer = require('inquirer');
 // pg/pool
 const { Pool } = require('pg');
 // console.table for 'prettier' tables (no index col)
-const cTable = require('console.table');
+require('console.table');
 
 // choices file
-const choicesFile = require('./assets/js/choices');
+const displayChoicesFile = require('./assets/js/display-choices');
 // Connect to database
 const pool = new Pool(
     {
@@ -25,8 +25,8 @@ const pool = new Pool(
 
 // DATA
 // FUNCTIONS
-// choices array
-const choicesArray = choicesFile;
+// display choices array
+const displayChoicesArray = displayChoicesFile;
 
 // ARRAY OF QUESTIONS FOR USER INPUT
 const input = [
@@ -34,7 +34,7 @@ const input = [
         type: 'list',
         name: 'action',
         message: 'What would you like to do?',
-        choices: choicesArray.map(action => ({name: action.name, value: action})),
+        choices: displayChoicesArray.map(action => ({name: action.name, value: action})),
     }    
             // What is the employees first name?
             // What is the employees last name?
@@ -54,15 +54,34 @@ const input = [
             // What is the name of the department?
 
     
-]
+];
 
-function init() {
+function getRoles() {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT title AS "name", id AS "value" FROM roles;', (err, res) => {
+            if (err) {
+                console.error(err);
+                reject.err;
+            } else {
+                console.log(res.rows);
+                resolve(res.rows);
+            }
+            pool.end();
+        });
+    });
+};
+
+async function init() {
+    try {
+        // get the roles
+        const rolesArray = await getRoles();
+
     inquirer
         // ask the questions
         .prompt(input)
         .then((answers) => {
             const selectedAction = answers.action;
-            if (selectedAction.query) {
+            if (selectedAction.name.includes("View")) {
                 pool.query(selectedAction.query, (err,res) => {
                     if (err){
                         console.error(err);
@@ -71,6 +90,28 @@ function init() {
                     }
                     pool.end();
                 });
+            } else if (selectedAction.name === "Add Employee") {
+                inquirer
+                .prompt([
+                    {   
+                        type: 'input',
+                        name: 'first-name',
+                        message: 'What is the employees first name?'
+                    },
+                    {   
+                        type: 'input',
+                        name: 'last-name',
+                        message: 'What is the employees last name?'
+                    },
+                    {  // What is the employees role? (choice - pulling roles list as choices)
+                        type: 'list',
+                        name: 'new-employee-role',
+                        message: 'What is the employees role?',
+                        choices: rolesArray.map(roles => ({name: roles.name, value: roles}))
+                    },
+                    // add an employee will be async 
+                    // Who is the employees manager? (choice, including none)
+                ])
             } else {
                 console.log('no query associtated with this action');
                 pool.end();
@@ -80,7 +121,11 @@ function init() {
             console.error(err);
             pool.end();
         });
-}
+    } catch (error) {
+        console.error(error);
+        pool.end();
+    }
+};
 
 // function call to initialize app
 init();

@@ -12,7 +12,10 @@ SELECT employees.id AS "Employee ID", employees.first_name AS "First Name", empl
 
 -- add employee (first name, last name)
 INSERT INTO employees (first_name, last_name, role_id)
-VALUES  ('Joe', 'Schmo', 1),
+VALUES  ('Blinko', 'Bango', 1);
+
+-- list of roles only
+SELECT title AS "Title", id AS "ID" FROM roles;
 
 -- SELECT * FROM departments;
 -- SELECT * FROM roles;

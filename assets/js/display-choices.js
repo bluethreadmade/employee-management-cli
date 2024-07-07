@@ -16,7 +16,7 @@ const displayChoices = [
         query: 'SELECT roles.title AS "Title", roles.id AS "Role ID", departments.department_name AS "Department Name", roles.salary AS "Salary" FROM roles INNER JOIN departments ON departments.id = roles.department_id;',
     },
     {   
-        name: 'Add Roles',
+        name: 'Add Role',
         query: '',
     },
     {   

@@ -39,17 +39,7 @@ const input = [
     }    
             // Which employee's role would you like to update? (choice)
             // Which role do you want to assign to the selected employee? (choice)
-
-
-            // add role
-            // What is the name of the role?
-            // What is the salary of the role?
-            // Which department does the role belong to? (choice)
-        
-            // add dept
-            // What is the name of the department?
-
-    
+ 
 ];
 
 async function getRoles() {
@@ -62,9 +52,21 @@ async function getRoles() {
     }
 };
 
+async function getDepartments() {
+    try {
+        const departments = await pool.query('SELECT department_name AS "name", id AS "value" FROM departments;');
+        return departments.rows;
+    } catch (error) {
+        console.error("Error getting departments:", error);
+        throw error;            
+    }
+};
+
 async function init() {
     try {
     const rolesArray = await getRoles();
+    const departmentsArray = await getDepartments();
+
     inquirer
         // ask the questions
         .prompt(input)
@@ -132,6 +134,38 @@ async function init() {
                 }
 
                 );
+            } else if (selectedAction.name === "Add Role") {
+                    inquirer
+                    .prompt([
+                        {   
+                            type: 'input',
+                            name: 'title',
+                            message: "What is the new role's title?"
+                        },
+                        {   
+                            type: 'input',
+                            name: 'salary',
+                            message: "What is the new role's salary?"
+                        },
+                        {  // What is the new role's department? (choice - pulling department list as choices)
+                            type: 'list',
+                            name: 'new-role-department',
+                            message: "What is the new role's department?",
+                            choices: departmentsArray.map(departments => ({name: departments.name, value: departments}))
+                        },
+                    ])
+                    .then((answers) => {
+    
+                        const newTitle = answers['title'];
+                        const newSalary = answers['salary'];
+                        const departmentId = answers['new-role-department'].value;
+                        // if the title salary and department were submitted - add the role
+                        const text = 'INSERT INTO roles (title, salary, department_id) VALUES ($1, $2, $3)'
+                        const values = [`${newTitle}`, `${newSalary}`, `${departmentId}`]
+
+                        const res = pool.query(text, values);
+                        console.log("Role Added");
+                    });
             
 
             } else {

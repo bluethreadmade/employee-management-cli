@@ -20,5 +20,5 @@ INSERT INTO departments (department_name) VALUES ('Testing');
 SELECT title AS "Title", id AS "ID" FROM roles;
 
 SELECT * FROM departments;
--- SELECT * FROM roles;
+SELECT * FROM roles;
 -- SELECT * FROM employees;

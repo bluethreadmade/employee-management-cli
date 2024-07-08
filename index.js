@@ -62,10 +62,21 @@ async function getDepartments() {
     }
 };
 
+async function getEmployees() {
+    try {
+        const employees = await pool.query('SELECT employees.id AS "name", employees.first_name AS "First Name", employees.last_name AS "Last Name", roles.title AS "Title" FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON departments.id = roles.department_id;');
+        return employees.rows;
+    } catch (error) {
+        console.error("Error getting employees:", error);
+        throw error;            
+    }
+};
+
 async function init() {
     try {
     const rolesArray = await getRoles();
     const departmentsArray = await getDepartments();
+    const employeesSimpleArray = await getEmployees();
 
     inquirer
         // ask the questions
@@ -166,7 +177,33 @@ async function init() {
                         const res = pool.query(text, values);
                         console.log("Role Added");
                     });
-            
+                } else if (selectedAction.name === "Update Employee Role") {
+                    inquirer
+                    .prompt([
+                        {   
+                            type: 'list',
+                            name: 'employee_to_update',
+                            message: "Which employee's role would you like to update?",
+                            choices: employeesSimpleArray.map(employee => ({name: employee.id, value: employee}))
+                        },
+                        {  
+                            type: 'list',
+                            name: 'updated_role',
+                            message: "Which role do you want to assign to the selected employee?",
+                            choices: rolesArray.map(role => ({name: role.name, value: role}))
+                        },
+                    ])
+                    .then((answers) => {
+    
+                        const updatedEmployee = answers['employee_to_update'].name;
+                        const updatedRole = answers['updated_role'].value;
+                        // if there is an employee selected and a new role selected upate the employee role id
+                        const text = 'UPDATE employees SET role_id = $1 WHERE employees.id = $2;'
+                        const values = [`${updatedRole}`, `${updatedEmployee}`];
+
+                        const res = pool.query(text, values);
+                        console.log("Employee role updated");
+                    });
 
             } else {
                 console.log('no query associtated with this action');

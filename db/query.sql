@@ -13,11 +13,17 @@ SELECT employees.id AS "Employee ID", employees.first_name AS "First Name", empl
 -- add employee (first name, last name, role_id)
 INSERT INTO employees (first_name, last_name, role_id) VALUES  ('Blinked', 'Banged', 'Lead Engineer');
 
--- add depratment (deprtment name)
+-- add department (department name)
 INSERT INTO departments (department_name) VALUES ('Testing');
 
 -- list of roles only
 SELECT title AS "Title", id AS "ID" FROM roles;
+
+-- view all employees simple
+SELECT employees.id AS "Employee ID", employees.first_name AS "First Name", employees.last_name AS "Last Name", roles.title AS "Title" FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON departments.id = roles.department_id;
+
+-- update employee role, use getEmployees to select employees.id from list and getRoles to select role from list, 
+UPDATE employees SET role_id = '4' WHERE employees.id = '3';
 
 SELECT * FROM departments;
 SELECT * FROM roles;

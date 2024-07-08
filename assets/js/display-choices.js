@@ -8,7 +8,7 @@ const displayChoices = [
         query: '',
     },
     {   
-        name: 'Update Employee Roles',
+        name: 'Update Employee Role',
         query: '',
     },
     {   

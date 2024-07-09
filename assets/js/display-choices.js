@@ -1,7 +1,7 @@
 const displayChoices = [
     {   
         name: 'View All Employees',
-        query: 'SELECT employees.id AS "Employee ID", employees.first_name AS "First Name", employees.last_name AS "Last Name", departments.department_name AS "Department", roles.title AS "Title", roles.salary AS "Salary" FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON departments.id = roles.department_id;',
+        query: 'SELECT employees.id AS "Employee ID", employees.first_name AS "First Name", employees.last_name AS "Last Name", departments.department_name AS "Department", roles.title AS "Title", roles.salary AS "Salary", manager_id AS "Manager" FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON departments.id = roles.department_id;',
     },
     {   
         name: 'Add Employee',

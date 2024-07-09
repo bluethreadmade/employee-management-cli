@@ -64,7 +64,8 @@ async function getDepartments() {
 
 async function getEmployees() {
     try {
-        const employees = await pool.query('SELECT employees.id AS "name", employees.first_name AS "First Name", employees.last_name AS "Last Name", roles.title AS "Title" FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON departments.id = roles.department_id;');
+        const employees = await pool.query('SELECT first_name, last_name, id AS "value" FROM employees;');
+        console.log(employees.rows);
         return employees.rows;
     } catch (error) {
         console.error("Error getting employees:", error);
@@ -184,7 +185,7 @@ async function init() {
                             type: 'list',
                             name: 'employee_to_update',
                             message: "Which employee's role would you like to update?",
-                            choices: employeesSimpleArray.map(employee => ({name: employee.id, value: employee}))
+                            choices: employeesSimpleArray.map(employee => ({name: `${employee.first_name} ${employee.last_name}`, value: employee.id}))
                         },
                         {  
                             type: 'list',
@@ -195,11 +196,11 @@ async function init() {
                     ])
                     .then((answers) => {
     
-                        const updatedEmployee = answers['employee_to_update'].name;
+                        const updatedEmployeeID = answers['employee_to_update'];
                         const updatedRole = answers['updated_role'].value;
                         // if there is an employee selected and a new role selected upate the employee role id
-                        const text = 'UPDATE employees SET role_id = $1 WHERE employees.id = $2;'
-                        const values = [`${updatedRole}`, `${updatedEmployee}`];
+                        const text = 'UPDATE employees SET role_id = $1 WHERE employees.first_name = $2;'
+                        const values = [updatedRole, updatedEmployeeID];
 
                         const res = pool.query(text, values);
                         console.log("Employee role updated");

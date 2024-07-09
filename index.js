@@ -185,7 +185,7 @@ async function init() {
                             type: 'list',
                             name: 'employee_to_update',
                             message: "Which employee's role would you like to update?",
-                            choices: employeesSimpleArray.map(employee => ({name: `${employee.first_name} ${employee.last_name}`, value: employee.id}))
+                            choices: employeesSimpleArray.map(employee => ({name: `${employee.first_name} ${employee.last_name}`, value: employee}))
                         },
                         {  
                             type: 'list',
@@ -196,10 +196,11 @@ async function init() {
                     ])
                     .then((answers) => {
     
-                        const updatedEmployeeID = answers['employee_to_update'];
+                        const updatedEmployeeID = answers['employee_to_update'].value;
                         const updatedRole = answers['updated_role'].value;
+                        console.log("here" + `${updatedEmployeeID}`+ `${updatedRole}`);
                         // if there is an employee selected and a new role selected upate the employee role id
-                        const text = 'UPDATE employees SET role_id = $1 WHERE employees.first_name = $2;'
+                        const text = 'UPDATE employees SET role_id = $1 WHERE employees.id = $2;'
                         const values = [updatedRole, updatedEmployeeID];
 
                         const res = pool.query(text, values);

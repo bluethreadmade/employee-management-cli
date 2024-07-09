@@ -207,7 +207,10 @@ async function init() {
                         console.log("Employee role updated");
                     });
 
-            } else {
+            } else if (selectedAction.name === "Quit") {
+                pool.end();
+                process.exit(0);            } 
+            else {
                 console.log('no query associtated with this action');
                 pool.end();
             }

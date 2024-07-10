@@ -28,3 +28,5 @@ UPDATE employees SET role_id = '4' WHERE employees.id = '3';
 SELECT * FROM departments;
 SELECT * FROM roles;
 -- SELECT * FROM employees;
+
+DELETE FROM employees WHERE employees.id = '3';
